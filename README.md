@@ -21,3 +21,24 @@ Setting up my Raspberry Pi to run Pi-hole was fairly straightforward while follo
 
 ## Notes on setting up scheduled domain blocking
 Using the helpful information on Thomas Mayfield's [blog post](https://thegreata.pe/articles/2021/02/28/pihole/), I created a custom Adlist for sites I wanted to block during certain times of the day.
+
+Custom Adlist - https://raw.githubusercontent.com/artwilton/pi-hole-setup/main/social-media-blocklist.hosts
+
+It's also possible to store an adlist file locally with the `file:///file-location` syntax. For example: `file:///home/pi/adlist.list`
+
+**Shell Script to Enable and Disable custom Adlist:**
+```
+#!/bin/bash
+#
+#block_social_media.sh
+
+sqlite3 /etc/pi/gravity.db "update adlist set enabled = $1 where id = 2;"
+pihole restartdns
+```
+
+Example syntax for crontab which passes a "true" or "false" parameter to the shell script. This would un-block social media websites from 8:00 AM to 11:00 AM.
+```
+# m h dom mon dow command
+00 8 * * * /home/pi/block_social_media.sh false
+0 11 * * * /home/pi/block_social_media.sh true
+```
