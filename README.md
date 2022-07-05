@@ -33,8 +33,10 @@ It's also possible to store an adlist file locally with the `file:///file-locati
 #block_social_media.sh
 
 sqlite3 /etc/pi/gravity.db "update adlist set enabled = $1 where id = 2;"
-pihole restartdns
+pihole -g
 ```
+
+The article I referenced was using `pihole restartdns` after updating the database, however I found this method to be unreliable since Pi-hole wasn't always seeing the changes in the database until running the `pihole -g` command.
 
 Example syntax for crontab which passes a "true" or "false" parameter to the shell script. This would un-block social media websites from 8:00 AM to 11:00 AM.
 ```
