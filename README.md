@@ -33,10 +33,10 @@ It's also possible to store an adlist file locally with the `file:///file-locati
 #block_social_media.sh
 
 sqlite3 /etc/pi/gravity.db "update adlist set enabled = $1 where id = 2;"
-pihole -g
+pihole restartdns
 ```
 
-The article I referenced was using `pihole restartdns` after updating the database, however I found this method to be unreliable since Pi-hole wasn't always seeing the changes in the database until running the `pihole -g` command.
+- **Troubleshooting Note:** I ran into issues here getting `pihole restartdns` to be a reliable method until I manually added my devices to the Default group in the Group Management settings. [Pi-hole documentation](https://docs.pi-hole.net/database/gravity/groups/) says that everything should be assigned to that group by default, but until I manually added certain devices they consistently had issues accessing sites that weren't blocked. For anyone running into that issue that doesn't want to manually added devices to the Default group, I found that running the `pihole -g` command instead worked consistently.
 
 Example syntax for crontab which passes a "true" or "false" parameter to the shell script. This would un-block social media websites from 8:00 AM to 11:00 AM.
 ```
