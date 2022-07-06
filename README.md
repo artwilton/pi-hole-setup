@@ -33,14 +33,18 @@ It's also possible to store an adlist file locally with the `file:///file-locati
 #block_social_media.sh
 
 sqlite3 /etc/pi/gravity.db "update adlist set enabled = $1 where id = 2;"
-pihole restartdns
+pihole restartdns reload-lists
 ```
 
-- **Troubleshooting Note:** I ran into issues here getting `pihole restartdns` to be a reliable method until I manually added my devices to the Default group in the Group Management settings. [Pi-hole documentation](https://docs.pi-hole.net/database/gravity/groups/) says that everything should be assigned to that group by default, but until I manually added certain devices they consistently had issues accessing sites that weren't blocked. For anyone running into that issue that doesn't want to manually added devices to the Default group, I found that running the `pihole -g` command instead worked consistently.
+- **Troubleshooting Note:** After trying a few different combinations of commands, I eventually found that `pihole restartdns reload-lists` worked best for consistently enabling and disabling the adlist, without having to restart any services like the `pihole restartdns` command by itself does.
 
-Example syntax for crontab which passes a "true" or "false" parameter to the shell script. This would un-block social media websites from 8:00 AM to 11:00 AM.
+  `pihole -g` also seemed to work well but I didn't want to have to rebuild the gravity database outside of its normal schedule, and when looking at the [code for enabling and disabling adlists in the Web interface](https://github.com/pi-hole/AdminLTE/blob/64bbce906b31c213183db7b6f0547513423e4bbf/scripts/pi-hole/php/groups.php#L1232) I saw that the Pi-hole devs use `pihole restartdns reload-lists` as well.
+
+  What I believe also helped was making sure to include `bash -lc` when running `sudo crontab -e`, which was the syntax used in Thomas Mayfield's blog post above. According to [this post](https://unix.stackexchange.com/a/121489), this forces "cron execution to use your login environment."
+
+**Example syntax for crontab** which passes a "true" or "false" parameter to the shell script. This would un-block social media websites from 8:00 AM to 11:00 AM.
 ```
 # m h dom mon dow command
-00 8 * * * /home/pi/block_social_media.sh false
-0 11 * * * /home/pi/block_social_media.sh true
+00 8 * * * bash -lc "/home/pi/block_social_media.sh false"
+0 11 * * * bash -lc "/home/pihole/block_social_media.sh true"
 ```
