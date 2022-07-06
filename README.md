@@ -46,5 +46,5 @@ pihole restartdns reload-lists
 ```
 # m h dom mon dow command
 00 8 * * * bash -lc "/home/pi/block_social_media.sh false"
-0 11 * * * bash -lc "/home/pihole/block_social_media.sh true"
+0 11 * * * bash -lc "/home/pi/block_social_media.sh true"
 ```
